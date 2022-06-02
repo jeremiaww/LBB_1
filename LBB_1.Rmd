@@ -1,0 +1,349 @@
+---
+title: "Learn by Building 1: Programming for Data Science"
+author: "Jeremia Widyanto"
+date: "April 28, 2022"
+output:
+  html_document:
+    theme: cosmo
+    highlight: tango
+    toc: true
+    toc_float:
+      collapsed: true
+    number_sections: true
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+# clear-up the environment
+rm(list = ls())
+
+# chunk options
+knitr::opts_chunk$set(
+  fig.align = "center",
+  message = FALSE,
+  warning = FALSE,
+  comment = "#>"
+)
+```
+
+<style>
+body {
+text-align: justify}
+</style>
+
+# Terkait Dataset {.tabset}
+
+##  Konteks
+Pertumbuhan supermarket di kota-kota terpadat semakin meningkat dan persaingan pasar juga tinggi. Dataset tersebut merupakan salah satu history penjualan perusahaan supermarket yang tercatat di 3 cabang berbeda selama 3 bulan data.
+
+## Ucapan Terima Kasih
+Terima kasih kepada semua yang meluangkan waktu dan energi untuk melakukan Kernel dengan dataset dan reviewer ini.
+
+Dataset berasal dari : https://www.kaggle.com/datasets/aungpyaeap/supermarket-sales
+
+# Tujuan Pelatihan
+Tujuan utama dari kursus ini adalah untuk memberikan pengenalan yang komprehensif untuk ilmu pemrograman statistik dan alat-alat yang diperlukan untuk berhasil dengan pekerjaan ilmu data.
+
+# Preparation Data
+
+Data Preparation atau bisa disebut juga dengan data preprocessing adalah suatu proses/langkah yang dilakukan untuk membuat data mentah menjadi data yang berkualitas.
+
+Mengapa data perlu di-preprocessing?
+
+Karena dalam data mentah masih terdapat data yang : Incomplete, Noisy, Inconcistent.
+
+Sehingga **"Jika data masukan tidak berkualitas, maka hasil data mining juga tidak akan berkualitas."** dan
+**"Keputusan yang berkualitas pasti berasal/berdasarkan data yang berkualitas."**
+
+Langkah-Langkah dalam data preparation :
+
+1. Data Cleaning
+
+Dalam data cleaning yang akan kita lakukan antara lain mengisi missing value, mengidentifikasi outlier, menangani data noise, mengoreksi data yang tidak konsisten, dan menyelesaikan masalah redudansi data akibat integrasi data.
+
+2. Data Integration
+
+Data integration adalah suatu langkah untuk menggabungkan data dari beberapa sumber. Data integration hanya dilakukan jika data berasal dari tempat yang berbeda-beda (sumber data tidak hanya dari 1 tempat). Langkah yang dilakukan antara lain mengintegrasikan skema, mengidentifikasi masalah entitas, dan mendeteksi sekaligus menyelesaikan konflik pada nilai data.
+
+3. Data Transformation
+
+Data transformation yaitu mengubah suatu data supaya diperoleh data yang lebih berkualitas. Yang akan dilakukan antara lain menghilangkan noise dari data (smoothing), meng-agregasi data, generalisasi data, normalisasi data, dan pembentukan atribut/fitur.
+
+4. Data Reduction
+
+Data Reduction yaitu langkah untuk mereduksi dimensi, atribut ataupun jumlah data. Yang akan dilakukan antara lain agregasi data cube, reduksi dimensi, diskretisasi, dan kompresi data.
+
+# Langkah-langkah dalam melakukan R' Program:
+
+## Extract / Input Data 
+
+Pertama-tama pastikan data yang ingin Anda gunakan, juga ada di direktori Anda saat ini, dan gunakan read.csv() untuk membaca file csv ke global enviroment Anda.
+
+Namun, untuk menjaga agar proyek tetap teratur, saya sarankan Anda menyimpan skrip, file yang berfungsi, dan data dependennya di direktori yang sama.
+
+```{r}
+supermaket_sales <- read.csv("supermarket_sales - Sheet1.csv")
+```
+
+## Data Inspection
+
+### Melihat Tabel Data
+
+Melihat Tabel Data dari 6 baris paling atas dengan code 'head()' atau melihat 6 baris paling bawah dengan code 'tail()'
+
+```{r}
+head(supermaket_sales)
+```
+
+```{r}
+tail(supermaket_sales)
+```
+
+**Penjelasan Variable / Kolom:(terdapat 17 kolom)**
+
+1 Invoice ID = Computer generated sales slip invoice identification number.
+
+2 Branch = Branch of supercenter (3 branches are available identified by A, B and C).
+
+3 City = Location of supercenters.
+
+4 Customer.type = Type of customers, recorded by Members for customers using member card and Normal for without member card.
+
+5 Gender = Gender type of customer.
+
+6 Product.line = General item categorization groups.
+
+7 Unit.price = Price of each product in $.
+
+8 Quantity = Number of products purchased by customer.
+
+9 Tax.5. = 5% tax fee for customer buying.
+
+10 Total = Total price including tax.
+
+11 Date = Date of purchase.
+
+12 Time = Purchase time.
+
+13 Payment = Payment used by customer for purchase.
+
+14 cogs = Cost of goods sold.
+
+15 gross.margin.percentage = Gross margin percentage.
+
+16 gross.income = Gross income.
+
+17 Rating = Customer stratification rating on their overall shopping experience (On a scale of 1 to 10).
+
+### Mengetahui dimensi Data Frame
+
+Fungsi `dim()` untuk mengetahui dimensi dari dataframe.
+
+```{r}
+dim(supermaket_sales)
+```
+Terdapat 1000 baris dan 17 kolom pada dataframe tersebut.
+
+## Data Cleansing & Explicit Coertions
+
+### Melihat Struktur Data  
+
+Panggil `str()` pada dataset 'supermarket_sales'.
+
+```{r}
+str(supermaket_sales)
+```
+
+Penjelasan tipe data pada setiap kolom:
+
+- 'chr' merupakan tipe data yang berisi huruf / character.
+
+- 'num' merupakan tipe data numeric yang berisi angka yang dapat berupa angka kontinu (ada koma/pecahan), maupun diskrit (bilangan bulat tanpa koma).
+
+- 'int' merupakan tipe data integer yang berisi angka yang berupa angka diskrit (bilangan bulat tanpa koma). Untuk memaksa numeric menjadi integer, dapat gunakan L dibelakang angka. 
+
+Dari Tipe data diatas ada beberapa yang tidak sesuai, sehingga harus diubah tipe datanya seperti:
+
+- Branch merupakan data factor, terdiri dari 3 levels saja.
+- City merupakan data factor, terdiri dari 3 levels saja.
+- Customer.type merupakan data factor, terdiri dari 2 levels saja.
+- Gender merupakan data factor, terdiri dari 2 levels saja.
+- Product.line merupakan data factor, terdiri dari 6 levels saja.
+- Payment merupakan data factor, terdiri dari 3 levels saja.
+- Date merupakan data date, bukan character.
+- Time merupakan data time, bukan character. Namun untuk mengubahnya membutuhkan library 'lubridate(), sehingga untuk saat ini time tidak usah diganti dahulu tipe datanya.
+
+Coding untuk melihat tipe data factor dapat melakukan seperti ini: (salah satu contoh)
+```{r}
+length(supermaket_sales$Payment)
+length(unique(supermaket_sales$Payment))
+```
+Dimana artinya terdapat 1000 data 'Payment', namun unique nya cuma ada 3 levels saja.
+
+### Mengubah tipe data
+```{r}
+supermaket_sales$Branch <- as.factor(supermaket_sales$Branch)
+supermaket_sales$City <- as.factor(supermaket_sales$City)
+supermaket_sales$Customer.type <- as.factor(supermaket_sales$Customer.type)
+supermaket_sales$Gender <- as.factor(supermaket_sales$Gender)
+supermaket_sales$Product.line <- as.factor(supermaket_sales$Product.line)
+supermaket_sales$Payment <- as.factor(supermaket_sales$Payment)
+
+supermaket_sales$Date <- as.Date(supermaket_sales$Date, "%m/%d/%Y")
+
+str(supermaket_sales)
+```
+
+### Check Missing Value
+
+Fungsi `anyNA()` digunakan untuk mengetahui apakah pada data terdapat missing value.
+
+```{r}
+anyNA(supermaket_sales)
+```
+
+Fungsi `is.na()` digunakan untuk mengecek missing value pada setiap nilai. Fungsi `colSums()` digunakan untuk menjumlahkan nilai pada setiap kolom.
+
+```{r}
+colSums(is.na(supermaket_sales))
+```
+
+**Ketika tipe data kolom sudah tepat, dan data no missing value. Maka summary lebih informatif, dan data siap untuk diproses lebih lanjut dan dianalisa.**
+
+##  Data Explanation
+
+### Mengetahui ringkasan Data Frame 
+
+Fungsi `summary()` untuk mengetahui ringkasan/rangkuman statistik dari dataframe.
+```{r}
+summary(supermaket_sales)
+```
+
+Kesimpulan:
+
+1. Penjualan terbanyak terjadi di cabang A > B > C.
+
+2. Penjualan terbanyak terjadi di kota Yangon > Mandalay > Naypyitaw.
+
+3. Customer.type yang Member lebih banyak daripada Normal.
+
+4. Pembeli terbanyak bergender Female.
+
+5. Product yang paling laku adalah Fashion accessories, dan yang kurang laku adalah Home and lifestyle.
+
+6. Rata-rata harga product adalah $55.67
+
+7. Rata-rata quantity product yang terjual 5.51 atau dibulatkan 6 
+
+8. Pembayarannya banyak menggunakan Ewallet.
+
+9. Penilaian / rating terhadap supermarket tersebut memiliki rata-rata 6.973, sehingga perlu ditingkatkan lagi pelayanannya.
+
+##  Data Manipulation & Transformation
+
+Melakukan Conditional Subsetting adalah teknik untuk mengambil sebagian data yang diperlukan untuk proses analisis. 
+Gunakan kurung siku `[]` setelah nama object Untuk melakukan subsetting. 
+
+**Berikut ilustrasinya:**
+
+1. Dari data `supermaket_sales`, ambil baris yang memiliki `Total` lebih dari $200 lalu ambil kolom `Product.line` beserta nilai `Total`nya.
+
+```{r}
+supermaket_sales[supermaket_sales$Total > 200,
+                 c("Product.line","Total")]
+```
+
+
+2. Berapa banyak transaksi yang pembayaran `Payment` menggunakan Credit card dan Ewallet?
+
+```{r}
+trans_1 <- supermaket_sales[supermaket_sales$Payment %in% c("Credit card", "Ewallet"), 
+                 c("Invoice.ID","Payment")]
+trans_1
+```
+
+```{r}
+nrow(trans_1)
+```
+**Jawaban: Terdapat 656 transaksi.**
+
+
+3. Berapa % `Gender` perempuan yang membeli `Product.line` Fashion accessories?
+
+```{r}
+persen_fa <- supermaket_sales[supermaket_sales$Product.line == "Fashion accessories", ]
+round(prop.table(table(persen_fa$Gender))*100,2)
+```
+**Jawaban: Female dengan persentase 53.93%.**
+
+4. Berapa jumlah `Total` yang dihasilkan dari masing-masing `Product.line` dan setiap `Customer.type`.
+
+```{r}
+xtabs(formula = Total ~ Product.line + Customer.type,
+      data = supermaket_sales)
+```
+**Jawaban: Cutomer.type: Member dengan Product.line:  Food and beverages, berjumlah 31357.62**
+
+
+5. Data `supermaket_sales` adalah data transaksi dari tahun 2019-01-01 sampai 2019-03-30. Anda diminta untuk menghitung jumlah Total yang diperoleh pada setiap Product.line, namun hanya untuk order yang terjadi **pada bulan 02 tahun 2019 saja** (Hint: `Date` di antara tanggal "2019-02-01" dan "2019-02-28")
+
+```{r}
+# conditional subsetting
+supermaket_sales_feb <- supermaket_sales[supermaket_sales$Date >= "2019-02-01" & supermaket_sales$Date <= "2019-02-28",]
+supermaket_sales_feb
+```
+
+6. Mengetahui banyaknya jenis pembayaran `Payment`di setiap kotannya `City`
+```{r}
+pembayaran <- table(supermaket_sales$Payment, supermaket_sales$City)
+pembayaran
+```
+**Jawaban: Di kota Mandalay: Ewallet, kota Naypyitaw: Cash, dan kota Yangon: Ewallet**
+
+7. Mengetahui rata-rata penilaian `Rating`di setiap cabang `Branch`
+```{r}
+rating_bran <- aggregate(formula = Rating ~ Branch,
+          data = supermaket_sales,
+          FUN = mean)
+
+rating_branc <- order(rating_bran$Rating, decreasing = T)
+
+rating_branch <- rating_bran[rating_branc, ]
+rating_branch
+```
+
+
+
+#  Explanatory Text & Business Recomendation
+
+Dataset terdiri dari history penjualan supermarket yang tercatat di 3 cabang berbeda selama 3 bulan, dapat digunakan untuk membantu pemilik / pengelola analisa. 
+
+Analisa yang digunakan seperti: Bagaimana penjualan yang terjadi, apa saja yang terjual, bagaimana rating supermarketnya, dan sebagainya.
+
+**Beberapa informasi dasar yang dapat diambil dari pengolahan data diatas, salah satunya adalah:**
+
+- Terdapat 3 supermarket yaitu A, B, C
+
+- Tersebar di 3 lokasi yaitu Mandalay, Naypyitaw, Yangon.
+
+- Terdiri dari 2 tipe pembeli yaitu Member dan Normal.
+
+- Jenis pembayaran yang bisa digunakan yaitu Cash, Credit card, dan Ewallet.
+
+**Dan beberapa informasi menarik lainnya yang lebih mendetail, seperti:**
+
+- Data terdiri dari 1000 transaksi(Invoice) selama 3 bulan.
+
+- Jenis Product yang paling laku adalah Fashion accessories, dengan persentasi pembelinya adalah female sebesar 53.93%.
+  Sedangkan untuk jenis yang kurang diminati adalah Health and beauty.
+  
+- Untuk rata-rata harga per barangnya adalah 55.23, dan harga barang termahalnya adalah 99.96 sedangkan harga yang termurahnya adalah 10.08.
+
+- Untuk rata-rata barang yang terjual adalah 5.51 pcs, dan paling banyak adalah 10pcs.
+
+- Total pendapatan dari 3 bulan dan 3 supermarket tersebut adalah 1042.65.
+
+- Untuk urutan penilaian dari masing masing branch adalah C dengan 7.07, A dengan 7.03, dan B dengan 6.82
+
+**Rekomendasi:**
+Sebagai seorang data Analysist dapat memberikan insight sederhana kepada pengelola supermarket tersebut, dengan meningkatkan kinerja supermarket di setiap branch nya. Karena dirasa penilaian tersebut masih bisa untuk ditingkatkan lagi. Bisa dilakukannya kerjasama dengan pihak lainnya agar penjualan dan penilaian nya meningkat. Mungkin dengan melakukan promosi / discount / advertising dan lain sebagainya.
